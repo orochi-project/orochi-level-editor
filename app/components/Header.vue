@@ -5,26 +5,42 @@ const menuBarItems = computed<{ label: string; options: DropdownMenuItem[] }[]>(
   () => [
     {
       label: "File",
-      options: [{ label: "Import Map" }, { label: "Export Map" }],
+      options: [
+        { label: "Import Map", kbds: ["Ctrl", "O"] },
+        { label: "Export Map", kbds: ["Ctrl", "Shift", "S"] },
+
+        { type: "separator" },
+
+        { label: "Import Song", kbds: ["Ctrl", "I"] },
+      ],
     },
     {
       label: "Edit",
       options: [
-        { label: "Undo" },
-        { label: "Redo" },
-        { label: "Cut" },
-        { label: "Copy" },
-        { label: "Paste" },
-        { label: "Delete" },
-        { label: "Select All" },
+        { label: "Undo", kbds: ["Ctrl", "Z"] },
+        { label: "Redo", kbds: ["Ctrl", "Y"] },
+
+        { type: "separator" },
+
+        { label: "Cut", kbds: ["Ctrl", "X"] },
+        { label: "Copy", kbds: ["Ctrl", "C"] },
+        { label: "Paste", kbds: ["Ctrl", "V"] },
+
+        { type: "separator" },
+
+        { label: "Delete", kbds: ["Del"] },
+        { label: "Select All", kbds: ["Ctrl", "A"] },
       ],
     },
     {
       label: "View",
       options: [
-        { label: "Zoom In" },
-        { label: "Zoom Out" },
-        { label: "Show Timeline" },
+        { label: "Zoom In", kbds: ["Ctrl", "+"] },
+        { label: "Zoom Out", kbds: ["Ctrl", "-"] },
+
+        { type: "separator" },
+
+        { label: "Show Timeline", kbds: ["T"] },
       ],
     },
   ],
