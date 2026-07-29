@@ -15,7 +15,7 @@ export const enum Direction {
 }
 
 /** The types of notes and their specs. */
-export const TYPES: {
+export const NOTE_TYPES: {
   key: NoteType;
   label: string;
   directions?: Direction[];

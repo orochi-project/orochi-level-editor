@@ -22,5 +22,5 @@ export const GRID_COLS = 20;
 export const ROW_HEIGHT = 64;
 /** The height of the ruler strip above the timeline rows, in pixels. */
 export const RULER_HEIGHT = 32;
-/** The width of the left sidebar in the timeline view, in pixels. */
-export const LABEL_WIDTH = 104;
+/** The left padding of the timeline view. */
+export const VIEW_PADDING_LEFT = 16;

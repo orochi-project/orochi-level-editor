@@ -16,3 +16,11 @@
   --color-red-900: #54100a;
   --color-red-950: #2d0505;
 }
+
+* {
+  overscroll-behavior: none;
+}
+
+body {
+  user-select: none;
+}
