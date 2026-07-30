@@ -65,7 +65,14 @@ const menuBarItems = computed<{ label: string; options: DropdownMenuItem[] }[]>(
     </template>
 
     <template #right>
-      <UColorModeButton />
+      <span class="flex items-center gap-1 mr-8 text-xs text-dimmed">
+        <UIcon name="i-lucide-leaf" />
+        This project is free and open-source.
+      </span>
+
+      <UTooltip text="Toggle Theme">
+        <UColorModeButton />
+      </UTooltip>
 
       <UTooltip text="Open on GitHub">
         <UButton
