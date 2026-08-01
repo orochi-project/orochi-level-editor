@@ -7,7 +7,7 @@ useHead({
   },
 });
 
-const title = "Orochi Level Editor";
+const title = "Yamata";
 const description = "The official level editor for the Orochi rhythm game.";
 
 useSeoMeta({
