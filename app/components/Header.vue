@@ -8,8 +8,12 @@ const menuBarItems = computed<{ label: string; options: DropdownMenuItem[] }[]>(
     {
       label: "File",
       options: [
-        { label: "Import Map", kbds: ["Ctrl", "O"] },
-        { label: "Export Map", kbds: ["Ctrl", "Shift", "S"] },
+        { label: "Open", kbds: ["Ctrl", "O"] },
+
+        { type: "separator" },
+
+        { label: "Save", kbds: ["Ctrl", "S"] },
+        { label: "Export (GBDK .c)", kbds: ["Ctrl", "Shift", "S"] },
 
         { type: "separator" },
 
