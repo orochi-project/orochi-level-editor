@@ -14,9 +14,6 @@ const timelineWidth = computed(() =>
   frameToPx(beatmapState.totalFrames, timelineUi.pixelsPerFrame),
 );
 
-/** Whether or not to show the export panel. */
-const showExportPanel = ref(false);
-
 /** The timeline scrolling container. */
 const scrollElement = ref<HTMLElement>();
 /** The rows container element. Used as the coordinate origin for rectangle selection. */
@@ -148,6 +145,7 @@ const gridLines = computed(() => {
       @play="timelineAudio.onPlay"
       @pause="timelineAudio.onPause"
       @seeked="timelineAudio.onSeeked"
+      @emptied="timelineAudio.onSourceChange"
       @loadedmetadata="
         () =>
           (beatmapState.songDuration =
@@ -163,11 +161,12 @@ const gridLines = computed(() => {
         :current-frame="timelineAudio.currentFrame.value"
         @play="timelineAudio.audioElement.value?.play()"
         @pause="timelineAudio.audioElement.value?.pause()"
-        @export="showExportPanel = true"
       />
 
       <div class="flex-1 flex min-h-0">
-        <div class="shrink-0 flex flex-col w-36 border-r border-default bg-default">
+        <div
+          class="shrink-0 flex flex-col w-36 border-r border-default bg-default"
+        >
           <div
             class="border-b border-default"
             :style="{ height: RULER_HEIGHT + 'px' }"
@@ -302,7 +301,5 @@ const gridLines = computed(() => {
         />
       </div>
     </div>
-
-    <TimelineExportModal v-model:open="showExportPanel" />
   </div>
 </template>

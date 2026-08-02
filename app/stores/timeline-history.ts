@@ -6,9 +6,9 @@ export const useTimelineHistoryStore = defineStore("timelineHistory", () => {
   const uiStore = useTimelineUiStore();
 
   /** The default number of frames it takes for a tap or reverse note to become fully charged. */
-  const DEFAULT_CHARGE_FRAMES = 90;
+  const DEFAULT_CHARGE_FRAMES = 120;
   /** The default number of frames a hold note should be held for. */
-  const DEFAULT_HOLD_FRAMES = 60;
+  const DEFAULT_HOLD_FRAMES = 90;
 
   /** The maximum number of history entries to retain for undo/redo. */
   const MAX_ACTION_HISTORY = 200;

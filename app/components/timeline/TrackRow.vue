@@ -23,6 +23,16 @@ const beatmapState = useBeatmapStateStore();
 const timelineUi = useTimelineUiStore();
 const timelineHistory = useTimelineHistoryStore();
 
+/** The note head size for tap notes. */
+const TAP_NOTE_HEAD_SIZE = 32;
+
+/** The note head size for reverse notes. */
+const REVERSE_NOTE_HEAD_SIZE = 48;
+
+/** Get the head size of a note depending on its type. */
+const getNoteHeadSize = (note: Note) =>
+  note.type === NoteType.TAP ? TAP_NOTE_HEAD_SIZE : REVERSE_NOTE_HEAD_SIZE;
+
 /** Notes belonging to this row's note type. */
 const rowNotes = computed(() =>
   beatmapState.notes.filter((n) => n.type === props.type.key),
@@ -133,11 +143,13 @@ const gridBackground = computed(() => {
             frameToPx(
               note.peakFrame - note.chargeFrames!,
               timelineUi.pixelsPerFrame,
-            ) + 'px',
+            ) +
+            getNoteHeadSize(note) +
+            'px',
           width:
             Math.max(
               frameToPx(note.chargeFrames!, timelineUi.pixelsPerFrame),
-              32,
+              getNoteHeadSize(note),
             ) + 'px',
         }"
         @pointerdown="emit('note-down', $event, note)"
@@ -170,19 +182,26 @@ const gridBackground = computed(() => {
 
         <div
           v-else
-          class="absolute flex justify-center items-center right-0 top-1/2 -translate-y-1/2 size-8"
+          class="absolute flex justify-center items-center right-0 top-1/2 -translate-y-1/2"
+          :style="{
+            width: REVERSE_NOTE_HEAD_SIZE + 'px',
+            height: REVERSE_NOTE_HEAD_SIZE + 'px',
+          }"
         >
           <div
-            class="absolute inset-0 rotate-45 rounded-sm ring-2"
-            :class="[
-              'bg-fuchsia-400',
+            class="absolute rotate-45 rounded-md ring-2 bg-fuchsia-400"
+            :class="
               timelineUi.selectedNoteIds.has(note.id)
                 ? 'ring-primary'
-                : 'ring-transparent',
-            ]"
+                : 'ring-transparent'
+            "
+            :style="{
+              width: REVERSE_NOTE_HEAD_SIZE / Math.SQRT2 + 'px',
+              height: REVERSE_NOTE_HEAD_SIZE / Math.SQRT2 + 'px',
+            }"
           />
 
-          <span class="relative text-xs text-fuchsia-900 font-bold">B</span>
+          <span class="relative text-xs font-bold text-fuchsia-900">B</span>
         </div>
       </div>
     </UTooltip>

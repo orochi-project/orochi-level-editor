@@ -15,12 +15,16 @@
     "@iconify-json/simple-icons": "^1.2.92",
     "@nuxt/ui": "^4.10.0",
     "@pinia/nuxt": "1.0.1",
+    "browser-fs-access": "^0.38.0",
+    "fflate": "^0.8.3",
+    "idb-keyval": "^6.3.0",
     "nuxt": "^4.4.8",
     "pinia": "^4.0.2",
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
     "@nuxt/eslint": "^1.16.0",
+    "@types/wicg-file-system-access": "^2023.10.7",
     "eslint": "^10.8.0",
     "typescript": "^6.0.3",
     "vue-tsc": "^3.3.8"

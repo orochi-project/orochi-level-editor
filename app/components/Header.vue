@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from "@nuxt/ui";
 
+const beatmapFile = useBeatmapFileStore();
 const beatmapState = useBeatmapStateStore();
 
 const menuBarItems = computed<{ label: string; options: DropdownMenuItem[] }[]>(
@@ -8,16 +9,28 @@ const menuBarItems = computed<{ label: string; options: DropdownMenuItem[] }[]>(
     {
       label: "File",
       options: [
-        { label: "Open", kbds: ["Ctrl", "O"] },
+        {
+          label: "Open",
+          kbds: ["Ctrl", "O"],
+          onSelect: beatmapFile.openBeatmap,
+        },
 
         { type: "separator" },
 
-        { label: "Save", kbds: ["Ctrl", "S"] },
+        {
+          label: "Save",
+          kbds: ["Ctrl", "S"],
+          onSelect: beatmapFile.saveBeatmap,
+        },
         { label: "Export (GBDK .c)", kbds: ["Ctrl", "Shift", "S"] },
 
         { type: "separator" },
 
-        { label: "Import Song", kbds: ["Ctrl", "I"], onSelect: triggerImport },
+        {
+          label: "Import Song",
+          kbds: ["Ctrl", "I"],
+          onSelect: triggerAudioImport,
+        },
       ],
     },
     {
@@ -53,11 +66,11 @@ const menuBarItems = computed<{ label: string; options: DropdownMenuItem[] }[]>(
 );
 
 /** The audio file input. */
-const fileInput = ref<HTMLInputElement>();
+const audioFileInput = ref<HTMLInputElement>();
 
 /** Trigger a file import dialog. */
-function triggerImport() {
-  fileInput.value?.click();
+function triggerAudioImport() {
+  audioFileInput.value?.click();
 }
 
 /**
@@ -65,7 +78,7 @@ function triggerImport() {
  *
  * @param e - The event properties.
  */
-function onFileSelected(e: Event) {
+function onAudioFileSelected(e: Event) {
   const target = e.target as HTMLInputElement;
   const file = target.files?.[0];
 
@@ -81,18 +94,20 @@ function onFileSelected(e: Event) {
 }
 
 defineShortcuts({
-  "Ctrl+I": triggerImport,
+  meta_o: () => beatmapFile.openBeatmap(),
+  meta_s: () => beatmapFile.saveBeatmap(),
+  meta_i: triggerAudioImport,
 });
 </script>
 
 <template>
   <UHeader>
     <input
-      ref="fileInput"
+      ref="audioFileInput"
       type="file"
       accept="audio/*"
       class="hidden"
-      @change="onFileSelected"
+      @change="onAudioFileSelected"
     />
 
     <template #left>

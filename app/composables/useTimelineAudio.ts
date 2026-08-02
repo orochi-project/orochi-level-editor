@@ -1,5 +1,5 @@
 import { FRAMES_PER_SECOND, VIEW_PADDING_LEFT } from "~~/utils/constants";
-import { pxToFrame } from "~~/utils/timeline";
+import { pxToFrame, frameToPx } from "~~/utils/timeline";
 
 export function useTimelineAudio(scrollElement: Ref<HTMLElement | undefined>) {
   const timelineUi = useTimelineUiStore();
@@ -15,6 +15,9 @@ export function useTimelineAudio(scrollElement: Ref<HTMLElement | undefined>) {
 
   /** Whether or not the audio is playing. */
   const isPlaying = ref(false);
+
+  /** Whether or not the user is seeking the ruler through the timeline. */
+  let scrubbing = false;
 
   /**
    * Bind or unbind the audio element reference from the template.
@@ -72,8 +75,12 @@ export function useTimelineAudio(scrollElement: Ref<HTMLElement | undefined>) {
     if (!audioElement.value.paused) syncPlayhead();
   }
 
-  /** Whether or not the user is seeking the ruler through the timeline. */
-  let scrubbing = false;
+  /** Reset the playback state when the audio source is replaced. */
+  function onSourceChange() {
+    isPlaying.value = false;
+    cancelAnimationFrame(playbackRafId);
+    currentFrame.value = 0;
+  }
 
   /**
    * Seek the audio to a certain point in pixels.
@@ -142,11 +149,40 @@ export function useTimelineAudio(scrollElement: Ref<HTMLElement | undefined>) {
     window.removeEventListener("pointermove", onRulerMove);
   }
 
+  /** Toggle between playing and paused. */
+  function togglePlayback() {
+    if (!audioElement.value) return;
+    if (audioElement.value.paused) audioElement.value.play();
+    else audioElement.value.pause();
+  }
+
+  /**
+   * Step the playhead by a given frame delta.
+   *
+   * @param delta - The frame delta to step by.
+   */
+  function stepFrame(delta: number) {
+    seekToPx(
+      frameToPx(
+        Math.max(0, currentFrame.value + delta),
+        timelineUi.pixelsPerFrame,
+      ),
+    );
+  }
+
   /** Remove pointer listeners when the composable is destroyed. */
   onUnmounted(() => {
     cancelAnimationFrame(playbackRafId);
     window.removeEventListener("pointermove", onRulerMove);
     window.removeEventListener("pointerup", onRulerUp);
+  });
+
+  defineShortcuts({
+    " ": togglePlayback,
+    arrowleft: () => stepFrame(-1),
+    arrowright: () => stepFrame(1),
+    shift_arrowleft: () => stepFrame(-timelineUi.snapFrames),
+    shift_arrowright: () => stepFrame(timelineUi.snapFrames),
   });
 
   return {
@@ -157,6 +193,7 @@ export function useTimelineAudio(scrollElement: Ref<HTMLElement | undefined>) {
     onPlay,
     onPause,
     onSeeked,
+    onSourceChange,
     onRulerDown,
     onRulerMove,
     onRulerUp,

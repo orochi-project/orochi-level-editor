@@ -3,10 +3,9 @@ const props = defineProps<{ playing: boolean; currentFrame: number }>();
 const emit = defineEmits<{
   (e: "play"): void;
   (e: "pause"): void;
-  (e: "export"): void;
 }>();
 
-const beatmapState = useBeatmapStateStore();
+const beatmapFile = useBeatmapFileStore();
 const timelineUi = useTimelineUiStore();
 const timelineHistory = useTimelineHistoryStore();
 
@@ -24,7 +23,7 @@ const snapOptions = [
     <div
       class="flex justify-between px-4 py-2.5 min-w-max w-full whitespace-nowrap"
     >
-      <div class="flex-2 flex justify-left items-center gap-4">
+      <div class="flex-2 flex justify-start items-center gap-4">
         <div class="shrink-0 flex items-center gap-2">
           <UTooltip v-if="!props.playing" text="Play">
             <UButton icon="i-lucide-play" size="sm" @click="$emit('play')" />
@@ -75,27 +74,25 @@ const snapOptions = [
         <USeparator orientation="vertical" class="shrink-0 h-5" />
 
         <span
-          v-if="beatmapState.audioFile"
-          class="flex items-center gap-1 mr-8 text-xs text-dimmed"
+          v-if="beatmapFile.beatmapFileName"
+          class="flex items-center gap-1 text-xs text-dimmed"
         >
-          <UIcon name="i-lucide-audio-lines" />
-          {{ beatmapState.audioFile.name ?? "Untitled" }}
+          <UIcon name="i-lucide-music-2" />
+          {{ beatmapFile.beatmapFileName }}
         </span>
-        <span v-else class="flex items-center gap-1 mr-8 text-xs text-dimmed">
-          <UIcon name="i-lucide-audio-lines" />
-          No audio loaded.
+        <span v-else class="flex items-center gap-1 text-xs text-dimmed">
+          <UIcon name="i-lucide-music-2" />
+          New Chart
         </span>
       </div>
 
-      <div class="flex-1 flex justify-right items-center gap-4">
-        <span
-          v-if="timelineUi.selectedNoteIds.size"
-          class="shrink-0 text-xs text-dimmed"
-        >
-          {{ timelineUi.selectedNoteIds.size }} selected
-        </span>
-
-        <USeparator orientation="vertical" class="shrink-0 h-5" />
+      <div class="flex-1 flex justify-end items-center gap-4">
+        <template v-if="timelineUi.selectedNoteIds.size">
+          <span class="shrink-0 text-xs text-dimmed">
+            {{ timelineUi.selectedNoteIds.size }} selected
+          </span>
+          <USeparator orientation="vertical" class="shrink-0 h-5" />
+        </template>
 
         <div class="shrink-0 flex items-center gap-2">
           <span class="text-xs text-dimmed">Snap</span>
@@ -141,19 +138,6 @@ const snapOptions = [
             />
           </UTooltip>
         </div>
-
-        <USeparator orientation="vertical" class="shrink-0 h-5" />
-
-        <UButton
-          icon="i-lucide-code"
-          color="neutral"
-          variant="soft"
-          size="sm"
-          class="px-3 shrink-0"
-          @click="$emit('export')"
-        >
-          Export
-        </UButton>
       </div>
     </div>
   </div>

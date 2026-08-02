@@ -54,7 +54,7 @@ function onInspectorResizeDown(e: PointerEvent) {
 </script>
 
 <template>
-  <!-- Inspector panel -->
+  <!-- inspector panel -->
   <div
     v-if="timelineUi.selectedNote || timelineUi.selectedNoteIds.size > 1"
     class="shrink-0 flex"
@@ -75,7 +75,7 @@ function onInspectorResizeDown(e: PointerEvent) {
             }}
             note</span
           >
-          <!-- Delete button -->
+          <!-- delete button -->
           <UTooltip text="Delete Note (Delete)">
             <UButton
               icon="i-lucide-trash-2"
@@ -87,7 +87,7 @@ function onInspectorResizeDown(e: PointerEvent) {
           </UTooltip>
         </div>
 
-        <!-- Direction -->
+        <!-- direction -->
         <div
           v-if="
             getNoteTypeMetadata(timelineUi.selectedNote.type).directions?.length
@@ -105,9 +105,9 @@ function onInspectorResizeDown(e: PointerEvent) {
           />
         </div>
 
-        <!-- Note position -->
+        <!-- note position -->
         <div class="grid grid-cols-2 gap-4">
-          <!-- Grid X -->
+          <!-- grid x -->
           <div>
             <label class="block mb-1.5 text-xs text-dimmed font-medium"
               >Grid X</label
@@ -120,7 +120,7 @@ function onInspectorResizeDown(e: PointerEvent) {
             />
           </div>
 
-          <!-- Grid Y -->
+          <!-- grid y -->
           <div>
             <label class="block mb-1.5 text-xs text-dimmed font-medium"
               >Grid Y</label
@@ -134,7 +134,7 @@ function onInspectorResizeDown(e: PointerEvent) {
           </div>
         </div>
 
-        <!-- Start/peak frame -->
+        <!-- start/peak frame -->
         <div>
           <label class="block mb-1.5 text-xs text-dimmed font-medium">
             {{
@@ -150,19 +150,7 @@ function onInspectorResizeDown(e: PointerEvent) {
           />
         </div>
 
-        <!-- Charge frames -->
-        <div>
-          <label class="block mb-1.5 text-xs text-dimmed font-medium"
-            >Charge frames</label
-          >
-          <UInputNumber
-            v-model="timelineUi.selectedNote.chargeFrames"
-            :min="1"
-            class="w-full"
-          />
-        </div>
-
-        <!-- Hold frames -->
+        <!-- hold frames -->
         <div v-if="timelineUi.selectedNote.type === NoteType.HOLD">
           <label class="block mb-1.5 text-xs text-dimmed font-medium"
             >Hold frames</label
@@ -173,10 +161,22 @@ function onInspectorResizeDown(e: PointerEvent) {
             class="w-full"
           />
         </div>
+
+        <!-- charge frames -->
+        <div>
+          <label class="block mb-1.5 text-xs text-dimmed font-medium"
+            >Charge frames</label
+          >
+          <UInputNumber
+            v-model="timelineUi.selectedNote.chargeFrames"
+            :min="1"
+            class="w-full"
+          />
+        </div>
       </template>
 
       <template v-else>
-        <!-- Multiple selected notes -->
+        <!-- multiple selected notes -->
         <div class="flex justify-between items-center">
           <span class="text-sm font-medium"
             >{{ timelineUi.selectedNoteIds.size }} notes selected</span
