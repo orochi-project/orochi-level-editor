@@ -3,7 +3,8 @@ import { GRID_COLS, GRID_ROWS } from "~~/utils/constants";
 
 export const useTimelineHistoryStore = defineStore("timelineHistory", () => {
   const beatmapState = useBeatmapStateStore();
-  const uiStore = useTimelineUiStore();
+  const timelineUi = useTimelineUiStore();
+  const { currentFrame } = storeToRefs(useTimelineAudioStore());
 
   /** The default number of frames it takes for a tap or reverse note to become fully charged. */
   const DEFAULT_CHARGE_FRAMES = 120;
@@ -62,7 +63,7 @@ export const useTimelineHistoryStore = defineStore("timelineHistory", () => {
     redoStack.value.push(cloneNotes(beatmapState.notes));
     beatmapState.notes = prev;
 
-    uiStore.clearSelection();
+    timelineUi.clearSelection();
   }
 
   /** Switch back to a state that was previously undone, if any. */
@@ -73,30 +74,30 @@ export const useTimelineHistoryStore = defineStore("timelineHistory", () => {
     undoStack.value.push(cloneNotes(beatmapState.notes));
     beatmapState.notes = next;
 
-    uiStore.clearSelection();
+    timelineUi.clearSelection();
   }
 
   /** Copy the currently selected notes to the clipboard. */
   function copySelected() {
-    if (!uiStore.selectedNoteIds.size) return;
-    clipboard.value = cloneNotes(uiStore.selectedNotesList);
+    if (!timelineUi.selectedNoteIds.size) return;
+    clipboard.value = cloneNotes(timelineUi.selectedNotesList);
   }
 
   /** Copy selected notes and delete them from the chart. */
   function cutSelected() {
-    if (!uiStore.selectedNoteIds.size) return;
+    if (!timelineUi.selectedNoteIds.size) return;
     copySelected();
     deleteSelected();
   }
 
   /** Paste clipboard notes at the current playhead position. */
-  function pasteClipboard(currentFrame: number) {
+  function pasteClipboard() {
     if (!clipboard.value.length) return;
 
     pushUndo();
 
     const minFrame = Math.min(...clipboard.value.map((n) => n.peakFrame));
-    const offset = currentFrame - minFrame;
+    const offset = currentFrame.value - minFrame;
 
     const pasted: Note[] = clipboard.value.map((n) =>
       clampNoteToTimeline({
@@ -107,7 +108,7 @@ export const useTimelineHistoryStore = defineStore("timelineHistory", () => {
     );
 
     beatmapState.notes.push(...pasted);
-    uiStore.selectedNoteIds = new Set(pasted.map((n) => n.id));
+    timelineUi.selectedNoteIds = new Set(pasted.map((n) => n.id));
   }
 
   /**
@@ -121,22 +122,22 @@ export const useTimelineHistoryStore = defineStore("timelineHistory", () => {
     const idx = beatmapState.notes.findIndex((n: Note) => n.id === noteId);
     if (idx !== -1) beatmapState.notes.splice(idx, 1);
 
-    if (uiStore.selectedNoteIds.has(noteId)) {
-      const next = new Set(uiStore.selectedNoteIds);
+    if (timelineUi.selectedNoteIds.has(noteId)) {
+      const next = new Set(timelineUi.selectedNoteIds);
       next.delete(noteId);
-      uiStore.selectedNoteIds = next;
+      timelineUi.selectedNoteIds = next;
     }
   }
 
   /** Delete every currently selected note. */
   function deleteSelected() {
-    if (!uiStore.selectedNoteIds.size) return;
+    if (!timelineUi.selectedNoteIds.size) return;
 
     pushUndo();
 
-    const ids = uiStore.selectedNoteIds;
+    const ids = timelineUi.selectedNoteIds;
     beatmapState.notes = beatmapState.notes.filter((n: Note) => !ids.has(n.id));
-    uiStore.clearSelection();
+    timelineUi.clearSelection();
   }
 
   /**
@@ -144,6 +145,7 @@ export const useTimelineHistoryStore = defineStore("timelineHistory", () => {
    *
    * @param trackX - The x-position within the timeline track, in pixels.
    * @param noteType - The type of note to place.
+   * @param noteDirection - The note's direction.
    */
   function placeNoteAt(
     trackX: number,
@@ -152,8 +154,8 @@ export const useTimelineHistoryStore = defineStore("timelineHistory", () => {
   ) {
     const peakFrame = pxToFrame(
       trackX,
-      uiStore.pixelsPerFrame,
-      uiStore.snapFrames,
+      timelineUi.pixelsPerFrame,
+      timelineUi.snapFrames,
     );
 
     if (
@@ -188,7 +190,7 @@ export const useTimelineHistoryStore = defineStore("timelineHistory", () => {
     const clampedNote = clampNoteToTimeline(note);
 
     beatmapState.notes.push(clampedNote);
-    uiStore.selectOnly(clampedNote.id);
+    timelineUi.selectOnly(clampedNote.id);
   }
 
   /**

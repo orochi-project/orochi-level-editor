@@ -4,6 +4,10 @@ import type { DropdownMenuItem } from "@nuxt/ui";
 const beatmapFile = useBeatmapFileStore();
 const beatmapState = useBeatmapStateStore();
 
+// for keyboard shortcuts
+const timelineUi = useTimelineUiStore();
+const timelineHistory = useTimelineHistoryStore();
+
 const menuBarItems = computed<{ label: string; options: DropdownMenuItem[] }[]>(
   () => [
     {
@@ -22,7 +26,7 @@ const menuBarItems = computed<{ label: string; options: DropdownMenuItem[] }[]>(
           kbds: ["Ctrl", "S"],
           onSelect: beatmapFile.saveBeatmap,
         },
-        { label: "Export (GBDK .c)", kbds: ["Ctrl", "Shift", "S"] },
+        { label: "Export (GBDK .c)", kbds: ["Ctrl", "Enter"] }, // TODO: implement this
 
         { type: "separator" },
 
@@ -36,30 +40,46 @@ const menuBarItems = computed<{ label: string; options: DropdownMenuItem[] }[]>(
     {
       label: "Edit",
       options: [
-        { label: "Undo", kbds: ["Ctrl", "Z"] },
-        { label: "Redo", kbds: ["Ctrl", "Y"] },
+        { label: "Undo", kbds: ["Ctrl", "Z"], onSelect: timelineHistory.undo },
+        { label: "Redo", kbds: ["Ctrl", "Y"], onSelect: timelineHistory.redo },
 
         { type: "separator" },
 
-        { label: "Cut", kbds: ["Ctrl", "X"] },
-        { label: "Copy", kbds: ["Ctrl", "C"] },
-        { label: "Paste", kbds: ["Ctrl", "V"] },
+        {
+          label: "Cut",
+          kbds: ["Ctrl", "X"],
+          onSelect: timelineHistory.cutSelected,
+        },
+        {
+          label: "Copy",
+          kbds: ["Ctrl", "C"],
+          onSelect: timelineHistory.copySelected,
+        },
+        {
+          label: "Paste",
+          kbds: ["Ctrl", "V"],
+          onSelect: timelineHistory.pasteClipboard,
+        },
+        {
+          label: "Delete",
+          kbds: ["Del"],
+          onSelect: timelineHistory.deleteSelected,
+        },
 
         { type: "separator" },
 
-        { label: "Delete", kbds: ["Del"] },
-        { label: "Select All", kbds: ["Ctrl", "A"] },
+        {
+          label: "Select All",
+          kbds: ["Ctrl", "A"],
+          onSelect: timelineUi.selectAllNotes,
+        },
       ],
     },
     {
       label: "View",
       options: [
-        { label: "Zoom In", kbds: ["Ctrl", "+"] },
-        { label: "Zoom Out", kbds: ["Ctrl", "-"] },
-
-        { type: "separator" },
-
-        { label: "Show Timeline", kbds: ["T"] },
+        { label: "Zoom In", kbds: ["="], onSelect: timelineUi.zoomIn },
+        { label: "Zoom Out", kbds: ["-"], onSelect: timelineUi.zoomOut },
       ],
     },
   ],

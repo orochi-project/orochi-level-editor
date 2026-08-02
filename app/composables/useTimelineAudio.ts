@@ -3,12 +3,10 @@ import { pxToFrame, frameToPx } from "~~/utils/timeline";
 
 export function useTimelineAudio(scrollElement: Ref<HTMLElement | undefined>) {
   const timelineUi = useTimelineUiStore();
+  const { currentFrame } = storeToRefs(useTimelineAudioStore());
 
   /** The main audio element for playback. */
   const audioElement = ref<HTMLAudioElement>();
-
-  /** The currently tracked playback frame. */
-  const currentFrame = ref(0);
 
   /** The ID of the animation frame loop. */
   let playbackRafId = 0;
@@ -148,7 +146,6 @@ export function useTimelineAudio(scrollElement: Ref<HTMLElement | undefined>) {
   /** Stop scrubbing via the timeline ruler. */
   function onRulerUp() {
     scrubbing = false;
-    targetScrollLeft = undefined;
     window.removeEventListener("pointermove", onRulerMove);
   }
 
@@ -203,7 +200,6 @@ export function useTimelineAudio(scrollElement: Ref<HTMLElement | undefined>) {
 
   return {
     audioElement,
-    currentFrame,
     isPlaying,
     setAudioElement,
     onPlay,

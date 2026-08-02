@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const props = defineProps<{ playing: boolean; currentFrame: number }>();
+const props = defineProps<{ playing: boolean }>();
 const emit = defineEmits<{
   (e: "play"): void;
   (e: "pause"): void;
@@ -8,6 +8,7 @@ const emit = defineEmits<{
 const beatmapFile = useBeatmapFileStore();
 const timelineUi = useTimelineUiStore();
 const timelineHistory = useTimelineHistoryStore();
+const { currentFrame } = useTimelineAudioStore();
 
 /** The possible frame snap options. */
 const snapOptions = [
@@ -39,7 +40,7 @@ const snapOptions = [
           </UTooltip>
 
           <span class="ml-1 text-xs font-mono text-muted tabular-nums"
-            >f{{ props.currentFrame }}</span
+            >f{{ currentFrame }}</span
           >
         </div>
 

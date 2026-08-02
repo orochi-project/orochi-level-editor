@@ -21,8 +21,9 @@ const rowsContainer = ref<HTMLElement>();
 
 const timelineInteractions = useTimelineInteractions(rowsContainer);
 const timelineAudio = useTimelineAudio(scrollElement);
+const { currentFrame } = storeToRefs(useTimelineAudioStore());
 
-useTimelineKeyboard(timelineAudio.currentFrame);
+useTimelineKeyboard();
 
 /** The height of the timeline panel, in pixels. */
 const panelHeight = ref(284);
@@ -158,7 +159,7 @@ const gridLines = computed(() => {
     >
       <TimelineToolbar
         :playing="timelineAudio.isPlaying.value"
-        :current-frame="timelineAudio.currentFrame.value"
+        :current-frame="currentFrame"
         @play="timelineAudio.audioElement.value?.play()"
         @pause="timelineAudio.audioElement.value?.pause()"
       />
@@ -282,11 +283,7 @@ const gridLines = computed(() => {
             <div
               class="pointer-events-none z-50 absolute w-px bg-error"
               :style="{
-                left:
-                  frameToPx(
-                    timelineAudio.currentFrame.value,
-                    timelineUi.pixelsPerFrame,
-                  ) + 'px',
+                left: frameToPx(currentFrame, timelineUi.pixelsPerFrame) + 'px',
                 top: RULER_HEIGHT + 'px',
                 bottom: 0,
               }"
