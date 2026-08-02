@@ -7,20 +7,16 @@ const beatmapState = useBeatmapStateStore();
 const exportedChart = computed(() => {
   // TODO: use the native hex format instead of this JSON format for exporting later (spec to be defined)
   const sorted = [...beatmapState.notes].sort(
-    (a, b) => a.peakFrame - b.peakFrame,
+    (a, b) => a.peakFrame - a.chargeFrames - (b.peakFrame - b.chargeFrames),
   );
 
-  let prevFrame = 0;
   return sorted.map((n) => {
-    const frameDelta = n.peakFrame - n.chargeFrames - prevFrame;
-    prevFrame = n.peakFrame;
-
     return {
       type: n.type,
       direction: n.direction,
       gridX: n.gridX,
       gridY: n.gridY,
-      frameDelta,
+      appearFrame: n.peakFrame - n.chargeFrames,
       chargeFrames: n.chargeFrames,
       holdFrames: n.type === NoteType.HOLD ? n.holdFrames : undefined,
     };
