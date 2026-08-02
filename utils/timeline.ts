@@ -42,21 +42,6 @@ export function getDirectionLabel(direction: Direction | null): string {
 }
 
 /**
- * Get the letter of a reverse note.
- *
- * @param noteType - The type of note.
- *
- * @returns "A" or "B", or an empty string if not a reverse note.
- */
-export function getReverseNoteLetter(noteType: NoteType): "A" | "B" | "" {
-  return noteType === NoteType.REVERSE_A
-    ? "A"
-    : noteType === NoteType.REVERSE_B
-      ? "B"
-      : "";
-}
-
-/**
  * Convert a frame number to pixels based on the defined pixelsPerFrame value.
  *
  * @param frame - The frame number to convert.

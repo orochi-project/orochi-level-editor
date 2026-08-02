@@ -2,8 +2,7 @@
 export const enum NoteType {
   TAP,
   HOLD,
-  REVERSE_A,
-  REVERSE_B,
+  REVERSE,
 }
 
 /** Represents the possible directions a note can point to. */
@@ -23,15 +22,10 @@ export const NOTE_TYPES: {
   {
     key: NoteType.TAP,
     label: "Tap",
-    directions: [Direction.LEFT, Direction.RIGHT],
+    directions: [Direction.LEFT, Direction.RIGHT, Direction.UP, Direction.DOWN],
   },
-  {
-    key: NoteType.HOLD,
-    label: "Hold",
-    directions: [Direction.UP, Direction.DOWN],
-  },
-  { key: NoteType.REVERSE_A, label: "Reverse A" },
-  { key: NoteType.REVERSE_B, label: "Reverse B" },
+  { key: NoteType.HOLD, label: "Hold" },
+  { key: NoteType.REVERSE, label: "Reverse" },
 ];
 
 /** The specs of all directions. */

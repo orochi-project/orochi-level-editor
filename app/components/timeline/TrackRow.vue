@@ -5,7 +5,6 @@ import {
   getNoteTypeMetadata,
   getDirectionIcon,
   getDirectionLabel,
-  getReverseNoteLetter,
 } from "~~/utils/timeline";
 
 const props = defineProps<{
@@ -112,11 +111,7 @@ const gridBackground = computed(() => {
           @pointerdown="emit('note-down', $event, note)"
           @dblclick.stop="timelineHistory.deleteNote(note.id)"
         >
-          <UIcon
-            v-if="note.direction !== undefined"
-            :name="getDirectionIcon(note.direction)!"
-            class="size-3.5 text-yellow-950"
-          />
+          <span class="relative text-xs text-yellow-900 font-bold">A</span>
 
           <div
             class="cursor-ew-resize absolute left-0 top-0 bottom-0 w-2.5 bg-black/15 hover:bg-black/25"
@@ -153,9 +148,7 @@ const gridBackground = computed(() => {
           :class="[
             note.type === NoteType.TAP
               ? 'bg-green-300/25'
-              : note.type === NoteType.REVERSE_A
-                ? 'bg-fuchsia-400/25'
-                : 'bg-indigo-400/25',
+              : 'bg-fuchsia-400/25',
           ]"
         />
 
@@ -182,18 +175,14 @@ const gridBackground = computed(() => {
           <div
             class="absolute inset-0 rotate-45 rounded-sm ring-2"
             :class="[
-              note.type === NoteType.REVERSE_A
-                ? 'bg-fuchsia-400'
-                : 'bg-indigo-400',
+              'bg-fuchsia-400',
               timelineUi.selectedNoteIds.has(note.id)
                 ? 'ring-primary'
                 : 'ring-transparent',
             ]"
           />
 
-          <span class="relative text-xs text-white font-bold">
-            {{ getReverseNoteLetter(note.type) }}
-          </span>
+          <span class="relative text-xs text-fuchsia-900 font-bold">B</span>
         </div>
       </div>
     </UTooltip>

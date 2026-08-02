@@ -28,7 +28,7 @@ const timelineAudio = useTimelineAudio(scrollElement);
 useTimelineKeyboard(timelineAudio.currentFrame);
 
 /** The height of the timeline panel, in pixels. */
-const panelHeight = ref(360);
+const panelHeight = ref(284);
 
 /**
  * Start resizing the timeline panel.
@@ -46,8 +46,8 @@ function onPanelResizeDown(e: PointerEvent) {
    */
   function move(ev: PointerEvent) {
     panelHeight.value = Math.min(
-      360,
-      Math.max(0, origHeight + (startY - ev.clientY)),
+      284,
+      Math.max(8, origHeight + (startY - ev.clientY)),
     );
   }
 
@@ -167,7 +167,7 @@ const gridLines = computed(() => {
       />
 
       <div class="flex-1 flex min-h-0">
-        <div class="shrink-0 w-36 border-r border-default bg-default">
+        <div class="shrink-0 flex flex-col w-36 border-r border-default bg-default">
           <div
             class="border-b border-default"
             :style="{ height: RULER_HEIGHT + 'px' }"
@@ -176,8 +176,7 @@ const gridLines = computed(() => {
           <div
             v-for="t in NOTE_TYPES"
             :key="t.key"
-            class="flex flex-col items-center justify-center gap-1 border-b border-default px-1"
-            :style="{ height: ROW_HEIGHT + 'px' }"
+            class="flex-1 flex flex-col items-center justify-center gap-1 border-b border-default px-1"
           >
             <span class="text-xs text-toned font-medium">
               {{ t.label }}

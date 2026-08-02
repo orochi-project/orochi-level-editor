@@ -21,8 +21,9 @@ export const useTimelineUiStore = defineStore("timelineUi", () => {
   const directionByType = reactive<Partial<Record<NoteType, Direction>>>({});
 
   /**
-   * Get the currently selected direction for a given note type, falling back
-   * to that type's first allowed direction if none has been chosen yet.
+   * Get the currently selected direction for a given note type.
+   *
+   * Falls back to the note type's first allowed direction if none has been chosen yet.
    *
    * @param type - The note type to get the direction for.
    *
