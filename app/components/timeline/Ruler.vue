@@ -30,7 +30,7 @@ const emit = defineEmits<{
         :key="'tick-' + i"
         class="pointer-events-none absolute bottom-0 border-l"
         :class="
-          line.strong ? 'border-default h-3 z-10' : 'border-muted h-1.5 z-0'
+          line.strong ? 'border-muted h-3 z-10' : 'border-default h-1.5 z-0'
         "
         :style="{ left: line.px + 'px' }"
       />

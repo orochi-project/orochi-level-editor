@@ -145,7 +145,11 @@ export const useTimelineHistoryStore = defineStore("timelineHistory", () => {
    * @param trackX - The x-position within the timeline track, in pixels.
    * @param noteType - The type of note to place.
    */
-  function placeNoteAt(trackX: number, noteType: NoteType) {
+  function placeNoteAt(
+    trackX: number,
+    noteType: NoteType,
+    noteDirection: Direction | undefined,
+  ) {
     const peakFrame = pxToFrame(
       trackX,
       uiStore.pixelsPerFrame,
@@ -166,11 +170,9 @@ export const useTimelineHistoryStore = defineStore("timelineHistory", () => {
     // We must check if the user actually selected a valid direction for their note type.
     // If not, we should make it fall back to the first valid direction.
     // (Only applies to tap and hold notes.)
-    let noteDirection: Direction | undefined = undefined;
     if (noteMetadata.directions?.length)
-      noteDirection = noteMetadata.directions.includes(uiStore.activeDirection)
-        ? uiStore.activeDirection
-        : noteMetadata.directions[0];
+      if (!noteDirection || !noteMetadata.directions.includes(noteDirection))
+        noteDirection = noteMetadata.directions[0];
 
     const note: Note = {
       id: crypto.randomUUID(),

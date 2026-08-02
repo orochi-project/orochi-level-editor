@@ -12,18 +12,44 @@ export const useTimelineUiStore = defineStore("timelineUi", () => {
   const activeType = ref<NoteType>(NoteType.TAP);
   /** Properties of the currently selected type. */
   const activeTypeMeta = computed(() => getNoteTypeMetadata(activeType.value));
-  /** The currently selected direction in the timeline toolbar. */
-  const activeDirection = ref<Direction>(Direction.LEFT);
 
-  // When the currently active type changes (by user input), we should update the currently selected direction to the first allowed direction of the newly selected note type.
-  watch(activeType, (noteType) => {
-    const allowedDirections = getNoteTypeMetadata(noteType).directions;
-    if (
-      allowedDirections?.length &&
-      !allowedDirections.includes(activeDirection.value)
-    )
-      activeDirection.value = allowedDirections[0]!;
-  });
+  /**
+   * The currently selected direction for each note type that supports directions.
+   *
+   * Keyed by NoteType so that, for example, Tap and Hold rows can each have their own independently-selected direction at the same time.
+   */
+  const directionByType = reactive<Partial<Record<NoteType, Direction>>>({});
+
+  /**
+   * Get the currently selected direction for a given note type, falling back
+   * to that type's first allowed direction if none has been chosen yet.
+   *
+   * @param type - The note type to get the direction for.
+   *
+   * @returns The direction of the note type.
+   */
+  function directionForType(type: NoteType): Direction | undefined {
+    const allowed = getNoteTypeMetadata(type).directions;
+    if (!allowed?.length) return undefined;
+    return directionByType[type] && allowed.includes(directionByType[type]!)
+      ? directionByType[type]
+      : allowed[0];
+  }
+
+  /**
+   * Set the currently selected direction for a given note type.
+   *
+   * @param type - The note type to set the direction for.
+   * @param direction - The direction to select.
+   */
+  function setDirectionForType(type: NoteType, direction: Direction) {
+    const allowed = getNoteTypeMetadata(type).directions;
+    if (!allowed?.includes(direction)) return;
+    directionByType[type] = direction;
+  }
+
+  /** The direction to use when placing a note of the currently active type. */
+  const activeDirection = computed(() => directionForType(activeType.value));
 
   /**
    * The IDs of all currently selected notes.
@@ -32,7 +58,10 @@ export const useTimelineUiStore = defineStore("timelineUi", () => {
    */
   const selectedNoteIds = ref<Set<string>>(new Set());
 
-  /** The single selected note, used for the inspector panel when exactly one note is selected. */
+  /** The single selected note.
+   *
+   * Used for the inspector panel when exactly one note is selected.
+   */
   const selectedNote = computed(() => {
     if (selectedNoteIds.value.size !== 1) return null;
     const [id] = selectedNoteIds.value;
@@ -97,6 +126,8 @@ export const useTimelineUiStore = defineStore("timelineUi", () => {
     activeType,
     activeTypeMeta,
     activeDirection,
+    directionForType,
+    setDirectionForType,
     selectedNoteIds,
     selectedNote,
     selectedNotesList,

@@ -14,6 +14,18 @@ export function useTimelineAudio(scrollElement: Ref<HTMLElement | undefined>) {
   /** The ID of the animation frame loop. */
   let playbackRafId = 0;
 
+  /** Whether or not the audio is playing. */
+  const isPlaying = ref(false);
+
+  /**
+   * Bind or unbind the audio element reference from the template.
+   *
+   * @param el - The element instance, or null when unmounting.
+   */
+  function setAudioElement(el: Element | ComponentPublicInstance | null) {
+    audioElement.value = (el as HTMLAudioElement) ?? undefined;
+  }
+
   /** Calculate the current song position in GBC frames. */
   function syncPlayhead() {
     if (!audioElement.value) return;
@@ -28,12 +40,15 @@ export function useTimelineAudio(scrollElement: Ref<HTMLElement | undefined>) {
 
   /** Start updating the timeline position when audio starts playing. */
   function onPlay() {
+    isPlaying.value = true;
     cancelAnimationFrame(playbackRafId);
     syncPlayhead();
   }
 
   /** Stop the update loop and set the final frame position. */
   function onPause() {
+    isPlaying.value = false;
+
     cancelAnimationFrame(playbackRafId);
 
     if (audioElement.value) {
@@ -42,6 +57,20 @@ export function useTimelineAudio(scrollElement: Ref<HTMLElement | undefined>) {
         Math.round(audioElement.value.currentTime * FRAMES_PER_SECOND),
       );
     }
+  }
+
+  /** Resync the playhead after a seek. */
+  function onSeeked() {
+    if (!audioElement.value) return;
+
+    currentFrame.value = Math.max(
+      0,
+      Math.round(audioElement.value.currentTime * FRAMES_PER_SECOND),
+    );
+
+    cancelAnimationFrame(playbackRafId);
+
+    if (!audioElement.value.paused) syncPlayhead();
   }
 
   /** Whether or not the user is seeking the ruler through the timeline. */
@@ -62,9 +91,8 @@ export function useTimelineAudio(scrollElement: Ref<HTMLElement | undefined>) {
 
     currentFrame.value = frame;
 
-    if (audioElement.value) {
+    if (audioElement.value)
       audioElement.value.currentTime = frame / FRAMES_PER_SECOND;
-    }
   }
 
   /**
@@ -125,8 +153,11 @@ export function useTimelineAudio(scrollElement: Ref<HTMLElement | undefined>) {
   return {
     audioElement,
     currentFrame,
+    isPlaying,
+    setAudioElement,
     onPlay,
     onPause,
+    onSeeked,
     onRulerDown,
     onRulerMove,
     onRulerUp,

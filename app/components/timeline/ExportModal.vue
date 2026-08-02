@@ -12,7 +12,7 @@ const exportedChart = computed(() => {
 
   let prevFrame = 0;
   return sorted.map((n) => {
-    const frameDelta = n.peakFrame - prevFrame;
+    const frameDelta = n.peakFrame - n.chargeFrames - prevFrame;
     prevFrame = n.peakFrame;
 
     return {

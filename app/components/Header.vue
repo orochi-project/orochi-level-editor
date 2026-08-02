@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from "@nuxt/ui";
 
+const beatmapState = useBeatmapStateStore();
+
 const menuBarItems = computed<{ label: string; options: DropdownMenuItem[] }[]>(
   () => [
     {
@@ -11,7 +13,7 @@ const menuBarItems = computed<{ label: string; options: DropdownMenuItem[] }[]>(
 
         { type: "separator" },
 
-        { label: "Import Song", kbds: ["Ctrl", "I"] },
+        { label: "Import Song", kbds: ["Ctrl", "I"], onSelect: triggerImport },
       ],
     },
     {
@@ -45,10 +47,50 @@ const menuBarItems = computed<{ label: string; options: DropdownMenuItem[] }[]>(
     },
   ],
 );
+
+/** The audio file input. */
+const fileInput = ref<HTMLInputElement>();
+
+/** Trigger a file import dialog. */
+function triggerImport() {
+  fileInput.value?.click();
+}
+
+/**
+ * Import a new audio file.
+ *
+ * @param e - The event properties.
+ */
+function onFileSelected(e: Event) {
+  const target = e.target as HTMLInputElement;
+  const file = target.files?.[0];
+
+  if (file) {
+    if (beatmapState.audioSource?.startsWith("blob:"))
+      URL.revokeObjectURL(beatmapState.audioSource); // clean up old
+
+    beatmapState.audioSource = URL.createObjectURL(file);
+    beatmapState.audioFile = file;
+  }
+
+  target.value = ""; // reset
+}
+
+defineShortcuts({
+  "Ctrl+I": triggerImport,
+});
 </script>
 
 <template>
   <UHeader>
+    <input
+      ref="fileInput"
+      type="file"
+      accept="audio/*"
+      class="hidden"
+      @change="onFileSelected"
+    />
+
     <template #left>
       <UDropdownMenu
         v-for="item in menuBarItems"
@@ -65,11 +107,6 @@ const menuBarItems = computed<{ label: string; options: DropdownMenuItem[] }[]>(
     </template>
 
     <template #right>
-      <span class="flex items-center gap-1 mr-8 text-xs text-dimmed">
-        <UIcon name="i-lucide-leaf" />
-        This project is free and open-source.
-      </span>
-
       <UTooltip text="Toggle Theme">
         <UColorModeButton />
       </UTooltip>

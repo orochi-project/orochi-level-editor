@@ -61,7 +61,29 @@ function onPanelResizeDown(e: PointerEvent) {
   window.addEventListener("pointerup", up);
 }
 
-/** The grid lines array storing each line, their position in pixels, whether they are minor or major, and their frame number label. */
+/**
+ * Pixel spacing for minor and major grid lines.
+ *
+ * Used by track rows to build a CSS background.
+ */
+const gridSpacing = computed(() => {
+  let minorStep = 12;
+
+  while (
+    frameToPx(minorStep, timelineUi.pixelsPerFrame) < 12 &&
+    minorStep < beatmapState.totalFrames
+  )
+    minorStep *= 2;
+
+  const majorStep = minorStep * 5;
+
+  return {
+    minorPx: frameToPx(minorStep, timelineUi.pixelsPerFrame),
+    majorPx: frameToPx(majorStep, timelineUi.pixelsPerFrame),
+  };
+});
+
+/** The grid lines array storing each line, their position in pixels, whether they are minor or major, and their frame number label. Used only by the ruler, which needs actual labeled ticks. */
 const gridLines = computed(() => {
   const lines: { px: number; strong: boolean; label?: string }[] = [];
 
@@ -120,18 +142,24 @@ const gridLines = computed(() => {
     </div>
 
     <audio
-      ref="timelineAudio.audioElement"
-      src="/wow-amazing-song.mp3"
+      :ref="timelineAudio.setAudioElement"
+      :src="beatmapState.audioSource"
       class="hidden"
       @play="timelineAudio.onPlay"
       @pause="timelineAudio.onPause"
-      @seeked="timelineAudio.onPause"
+      @seeked="timelineAudio.onSeeked"
+      @loadedmetadata="
+        () =>
+          (beatmapState.songDuration =
+            timelineAudio.audioElement.value?.duration ?? 0)
+      "
     />
 
     <div
       class="flex-1 flex flex-col min-h-0 border-t border-default bg-default"
     >
       <TimelineToolbar
+        :playing="timelineAudio.isPlaying.value"
         :current-frame="timelineAudio.currentFrame.value"
         @play="timelineAudio.audioElement.value?.play()"
         @pause="timelineAudio.audioElement.value?.pause()"
@@ -148,12 +176,39 @@ const gridLines = computed(() => {
           <div
             v-for="t in NOTE_TYPES"
             :key="t.key"
-            class="flex items-center justify-center border-b border-default"
+            class="flex flex-col items-center justify-center gap-1 border-b border-default px-1"
             :style="{ height: ROW_HEIGHT + 'px' }"
           >
             <span class="text-xs text-toned font-medium">
               {{ t.label }}
             </span>
+
+            <div v-if="t.directions?.length" class="flex items-center gap-0.5">
+              <UTooltip
+                v-for="dir in ALL_DIRECTIONS.filter((d) =>
+                  t.directions?.includes(d.key),
+                )"
+                :key="dir.key"
+                :text="dir.label"
+              >
+                <UButton
+                  :icon="dir.icon"
+                  size="xs"
+                  square
+                  :color="
+                    timelineUi.directionForType(t.key) === dir.key
+                      ? 'primary'
+                      : 'neutral'
+                  "
+                  :variant="
+                    timelineUi.directionForType(t.key) === dir.key
+                      ? 'solid'
+                      : 'ghost'
+                  "
+                  @click="timelineUi.setDirectionForType(t.key, dir.key)"
+                />
+              </UTooltip>
+            </div>
           </div>
         </div>
 
@@ -188,7 +243,7 @@ const gridLines = computed(() => {
                 v-for="t in NOTE_TYPES"
                 :key="t.key"
                 :type="t"
-                :grid-lines="gridLines"
+                :grid-spacing="gridSpacing"
                 :timeline-width="timelineWidth"
                 @note-down="timelineInteractions.onNoteDown"
                 @hold-resize-left="timelineInteractions.onHoldResizeLeftDown"

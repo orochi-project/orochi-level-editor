@@ -351,7 +351,11 @@ export function useTimelineInteractions(
     if (marquee.value.moved) applyMarqueeSelection();
     else if (!marquee.value.additive)
       // a normal click on empty background places a note there
-      timelineHistory.placeNoteAt(marquee.value.startX, marquee.value.noteType);
+      timelineHistory.placeNoteAt(
+        marquee.value.startX,
+        marquee.value.noteType,
+        timelineUi.directionForType(marquee.value.noteType),
+      );
     // a shift-click with no drag on empty background should not do anything
 
     marquee.value = null;

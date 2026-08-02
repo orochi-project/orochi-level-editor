@@ -11,7 +11,7 @@ import {
 const props = defineProps<{
   type: { key: NoteType; label: string };
   timelineWidth: number;
-  gridLines: { px: number; strong: boolean; label?: string }[];
+  gridSpacing: { minorPx: number; majorPx: number };
 }>();
 
 const emit = defineEmits<{
@@ -23,25 +23,48 @@ const emit = defineEmits<{
 const beatmapState = useBeatmapStateStore();
 const timelineUi = useTimelineUiStore();
 const timelineHistory = useTimelineHistoryStore();
+
+/** Notes belonging to this row's note type. */
+const rowNotes = computed(() =>
+  beatmapState.notes.filter((n) => n.type === props.type.key),
+);
+
+/** CSS background creating minor/major grid lines without any DOM nodes. */
+const gridBackground = computed(() => {
+  const { minorPx, majorPx } = props.gridSpacing;
+
+  return [
+    // major lines
+    `repeating-linear-gradient(
+      to right,
+      var(--ui-border-muted) 0,
+      var(--ui-border-muted) 1px,
+      transparent 1px,
+      transparent ${majorPx}px
+    )`,
+    // minor lines
+    `repeating-linear-gradient(
+      to right,
+      var(--ui-border) 0,
+      var(--ui-border) 1px,
+      transparent 1px,
+      transparent ${minorPx}px
+    )`,
+  ].join(", ");
+});
 </script>
 
 <template>
   <div
     class="relative border-b border-default hover:bg-elevated/30"
-    :style="{ width: props.timelineWidth + 'px', height: ROW_HEIGHT + 'px' }"
+    :style="{
+      width: props.timelineWidth + 'px',
+      height: ROW_HEIGHT + 'px',
+      backgroundImage: gridBackground,
+    }"
   >
-    <div
-      v-for="(line, i) in props.gridLines"
-      :key="'grid-' + i"
-      class="pointer-events-none absolute top-0 bottom-0 border-l"
-      :class="
-        line.strong ? 'border-default z-10' : 'border-muted opacity-50 z-0'
-      "
-      :style="{ left: line.px + 'px' }"
-    />
-
     <UTooltip
-      v-for="note in beatmapState.notes.filter((n) => n.type === type.key)"
+      v-for="note in rowNotes"
       :key="note.id"
       :text="
         note.direction !== undefined
