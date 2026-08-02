@@ -1,4 +1,3 @@
-import { onUnmounted } from "vue";
 import { FRAMES_PER_SECOND, VIEW_PADDING_LEFT } from "~~/utils/constants";
 import { pxToFrame } from "~~/utils/timeline";
 
