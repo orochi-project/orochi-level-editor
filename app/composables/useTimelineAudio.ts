@@ -37,6 +37,8 @@ export function useTimelineAudio(scrollElement: Ref<HTMLElement | undefined>) {
       Math.round(audioElement.value.currentTime * FRAMES_PER_SECOND),
     );
 
+    followPlayhead();
+
     playbackRafId = requestAnimationFrame(syncPlayhead);
   }
 
@@ -146,6 +148,7 @@ export function useTimelineAudio(scrollElement: Ref<HTMLElement | undefined>) {
   /** Stop scrubbing via the timeline ruler. */
   function onRulerUp() {
     scrubbing = false;
+    targetScrollLeft = undefined;
     window.removeEventListener("pointermove", onRulerMove);
   }
 
@@ -168,6 +171,19 @@ export function useTimelineAudio(scrollElement: Ref<HTMLElement | undefined>) {
         timelineUi.pixelsPerFrame,
       ),
     );
+  }
+
+  /** Follow the playhead. */
+  function followPlayhead() {
+    if (!scrollElement.value || scrubbing) return;
+
+    const playheadPx =
+      frameToPx(currentFrame.value, timelineUi.pixelsPerFrame) +
+      VIEW_PADDING_LEFT;
+
+    const target = playheadPx - scrollElement.value.clientWidth * 0.25;
+    const distance = target - scrollElement.value.scrollLeft;
+    scrollElement.value.scrollLeft += distance;
   }
 
   /** Remove pointer listeners when the composable is destroyed. */
