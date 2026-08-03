@@ -180,6 +180,7 @@ export const useTimelineHistoryStore = defineStore("timelineHistory", () => {
       id: crypto.randomUUID(),
       type: noteType,
       direction: noteDirection,
+      speedModifier: 0, // 0 = don't modify
       gridX: Math.floor(GRID_COLS / 2), // center x
       gridY: Math.floor(GRID_ROWS / 2), // center y
       peakFrame,

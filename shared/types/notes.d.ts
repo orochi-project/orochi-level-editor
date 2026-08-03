@@ -18,6 +18,8 @@ declare global {
      * Tap notes can either point left or right, while hold notes can only point up or down.
      */
     direction?: Direction;
+    /** The speed to set the scanline to. */
+    speedModifier: number;
     /** The note's x-position on the game grid. */
     gridX: number;
     /** The note's y-position on the game grid. */

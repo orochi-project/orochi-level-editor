@@ -19,7 +19,7 @@ const directionItems = computed(() => {
 });
 
 /** The width, in pixels, of the note inspector inside the timeline panel. */
-const inspectorWidth = ref(288);
+const inspectorWidth = ref(280);
 
 /**
  * Start resizing the note inspector.
@@ -101,6 +101,18 @@ function onInspectorResizeDown(e: PointerEvent) {
             :items="directionItems"
             option-attribute="label"
             value-attribute="value"
+            class="w-full"
+          />
+        </div>
+
+        <!-- speed -->
+        <div>
+          <label class="block mb-1.5 text-xs text-dimmed font-medium"
+            >Speed modifier</label
+          >
+          <UInputNumber
+            v-model="timelineUi.selectedNote.speedModifier"
+            :min="1"
             class="w-full"
           />
         </div>
