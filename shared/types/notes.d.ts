@@ -20,10 +20,8 @@ declare global {
     direction?: Direction;
     /** The speed to set the scanline to. */
     speedModifier: number;
-    /** The note's x-position on the game grid. */
-    gridX: number;
-    /** The note's y-position on the game grid. */
-    gridY: number;
+    /** The note's placement on the game grid. */
+    gridIndex: number;
     /**
      * The exact frame at which the note is fully charged.
      *

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { GRID_ROWS, GRID_COLS } from "~~/utils/constants";
+import { GRID_TILE_COUNT } from "~~/utils/constants";
 import { getNoteTypeMetadata } from "~~/utils/timeline";
 
 const timelineUi = useTimelineUiStore();
@@ -105,6 +105,19 @@ function onInspectorResizeDown(e: PointerEvent) {
           />
         </div>
 
+        <!-- grid index -->
+        <div>
+          <label class="block mb-1.5 text-xs text-dimmed font-medium"
+            >Grid tile index</label
+          >
+          <UInputNumber
+            v-model="timelineUi.selectedNote.gridIndex"
+            :min="0"
+            :max="GRID_TILE_COUNT"
+            class="w-full"
+          />
+        </div>
+
         <!-- speed -->
         <div>
           <label class="block mb-1.5 text-xs text-dimmed font-medium"
@@ -115,35 +128,6 @@ function onInspectorResizeDown(e: PointerEvent) {
             :min="1"
             class="w-full"
           />
-        </div>
-
-        <!-- note position -->
-        <div class="grid grid-cols-2 gap-4">
-          <!-- grid x -->
-          <div>
-            <label class="block mb-1.5 text-xs text-dimmed font-medium"
-              >Grid X</label
-            >
-            <UInputNumber
-              v-model="timelineUi.selectedNote.gridX"
-              :min="0"
-              :max="GRID_COLS"
-              class="w-full"
-            />
-          </div>
-
-          <!-- grid y -->
-          <div>
-            <label class="block mb-1.5 text-xs text-dimmed font-medium"
-              >Grid Y</label
-            >
-            <UInputNumber
-              v-model="timelineUi.selectedNote.gridY"
-              :min="0"
-              :max="GRID_ROWS"
-              class="w-full"
-            />
-          </div>
         </div>
 
         <!-- start/peak frame -->

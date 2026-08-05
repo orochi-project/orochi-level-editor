@@ -1,5 +1,4 @@
 import { getNoteTypeMetadata, pxToFrame } from "~~/utils/timeline";
-import { GRID_COLS, GRID_ROWS } from "~~/utils/constants";
 
 export const useTimelineHistoryStore = defineStore("timelineHistory", () => {
   const beatmapState = useBeatmapStateStore();
@@ -181,8 +180,7 @@ export const useTimelineHistoryStore = defineStore("timelineHistory", () => {
       type: noteType,
       direction: noteDirection,
       speedModifier: 0, // 0 = don't modify
-      gridX: Math.floor(GRID_COLS / 2), // center x
-      gridY: Math.floor(GRID_ROWS / 2), // center y
+      gridIndex: 0,
       peakFrame,
       chargeFrames: DEFAULT_CHARGE_FRAMES,
       holdFrames: noteType === NoteType.HOLD ? DEFAULT_HOLD_FRAMES : 0,

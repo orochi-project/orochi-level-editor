@@ -129,7 +129,7 @@ const gridLines = computed(() => {
 
 <template>
   <div
-    class="z-40 overflow-hidden fixed flex flex-col bottom-0 left-0 right-0"
+    class="z-40 overflow-hidden flex flex-col w-full"
     :style="{ height: panelHeight + 'px' }"
   >
     <div

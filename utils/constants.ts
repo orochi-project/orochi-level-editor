@@ -6,17 +6,11 @@
 export const FRAMES_PER_SECOND = 262144 / 4389;
 
 /**
- * The number of rows on the game grid.
+ * The number of tiles on the game grid.
  *
  * Each grid box is an 8x8 square.
  */
-export const GRID_ROWS = 18;
-/**
- * The number of columns on the game grid.
- *
- * Each grid box is an 8x8 square.
- */
-export const GRID_COLS = 20;
+export const GRID_TILE_COUNT = 40;
 
 /** The height of each timeline row, in pixels. */
 export const ROW_HEIGHT = 64;
