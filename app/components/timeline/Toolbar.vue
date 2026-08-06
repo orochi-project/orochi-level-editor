@@ -8,7 +8,7 @@ const emit = defineEmits<{
 const beatmapFile = useBeatmapFileStore();
 const timelineUi = useTimelineUiStore();
 const timelineHistory = useTimelineHistoryStore();
-const { currentFrame } = useTimelineAudioStore();
+const { currentFrame } = storeToRefs(useTimelineAudioStore());
 
 /** The possible frame snap options. */
 const snapOptions = [

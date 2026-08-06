@@ -17,15 +17,17 @@ export const enum Direction {
 export const NOTE_TYPES: {
   key: NoteType;
   label: string;
+  icon: string;
   directions?: Direction[];
 }[] = [
   {
     key: NoteType.TAP,
     label: "Tap",
+    icon: "i-lucide-circle",
     directions: [Direction.LEFT, Direction.RIGHT, Direction.UP, Direction.DOWN],
   },
-  { key: NoteType.HOLD, label: "Hold" },
-  { key: NoteType.REVERSE, label: "Reverse" },
+  { key: NoteType.HOLD, icon: "i-lucide-rectangle-horizontal", label: "Hold" },
+  { key: NoteType.REVERSE, icon: "i-lucide-diamond", label: "Reverse" },
 ];
 
 /** The specs of all directions. */

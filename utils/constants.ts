@@ -18,3 +18,16 @@ export const ROW_HEIGHT = 64;
 export const RULER_HEIGHT = 32;
 /** The left padding of the timeline view. */
 export const VIEW_PADDING_LEFT = 16;
+
+/** The width of the playable space in the map. */
+export const MAP_SPACE_WIDTH = 143;
+/** The number of pixels the scanline moves per frame. */
+export const SCANLINE_PIXELS_PER_FRAME = 1;
+/** The base number of seconds a full sweep should take. */
+export const BASE_CROSSING_SECONDS =
+  (SCANLINE_PIXELS_PER_FRAME * MAP_SPACE_WIDTH) / FRAMES_PER_SECOND;
+
+/** The width of a note, in pixels. */
+export const NOTE_WIDTH = 16;
+/** The height of a note, in pixels. */
+export const NOTE_HEIGHT = 16;

@@ -3,16 +3,14 @@ import { pxToFrame, frameToPx } from "~~/utils/timeline";
 
 export function useTimelineAudio(scrollElement: Ref<HTMLElement | undefined>) {
   const timelineUi = useTimelineUiStore();
-  const { currentFrame } = storeToRefs(useTimelineAudioStore());
+  const timelineHistory = useTimelineHistoryStore();
+  const { currentFrame, isPlaying } = storeToRefs(useTimelineAudioStore());
 
   /** The main audio element for playback. */
   const audioElement = ref<HTMLAudioElement>();
 
   /** The ID of the animation frame loop. */
   let playbackRafId = 0;
-
-  /** Whether or not the audio is playing. */
-  const isPlaying = ref(false);
 
   /** Whether or not the user is seeking the ruler through the timeline. */
   let scrubbing = false;
@@ -192,15 +190,26 @@ export function useTimelineAudio(scrollElement: Ref<HTMLElement | undefined>) {
 
   defineShortcuts({
     " ": togglePlayback,
-    arrowleft: () => stepFrame(-1),
-    arrowright: () => stepFrame(1),
-    shift_arrowleft: () => stepFrame(-timelineUi.snapFrames),
-    shift_arrowright: () => stepFrame(timelineUi.snapFrames),
+    arrowleft: () =>
+      timelineUi.selectedNoteIds.size > 0
+        ? timelineHistory.moveSelected(-1)
+        : stepFrame(-1),
+    arrowright: () =>
+      timelineUi.selectedNoteIds.size > 0
+        ? timelineHistory.moveSelected(1)
+        : stepFrame(1),
+    shift_arrowleft: () =>
+      timelineUi.selectedNoteIds.size > 0
+        ? timelineHistory.moveSelected(-timelineUi.snapFrames)
+        : stepFrame(-timelineUi.snapFrames),
+    shift_arrowright: () =>
+      timelineUi.selectedNoteIds.size > 0
+        ? timelineHistory.moveSelected(timelineUi.snapFrames)
+        : stepFrame(timelineUi.snapFrames),
   });
 
   return {
     audioElement,
-    isPlaying,
     setAudioElement,
     onPlay,
     onPause,

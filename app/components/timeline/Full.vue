@@ -21,7 +21,7 @@ const rowsContainer = ref<HTMLElement>();
 
 const timelineInteractions = useTimelineInteractions(rowsContainer);
 const timelineAudio = useTimelineAudio(scrollElement);
-const { currentFrame } = storeToRefs(useTimelineAudioStore());
+const { currentFrame, isPlaying } = storeToRefs(useTimelineAudioStore());
 
 useTimelineKeyboard();
 
@@ -158,7 +158,7 @@ const gridLines = computed(() => {
       class="flex-1 flex flex-col min-h-0 border-t border-default bg-default"
     >
       <TimelineToolbar
-        :playing="timelineAudio.isPlaying.value"
+        :playing="isPlaying"
         :current-frame="currentFrame"
         @play="timelineAudio.audioElement.value?.play()"
         @pause="timelineAudio.audioElement.value?.pause()"

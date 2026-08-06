@@ -6,9 +6,9 @@ export const useTimelineHistoryStore = defineStore("timelineHistory", () => {
   const { currentFrame } = storeToRefs(useTimelineAudioStore());
 
   /** The default number of frames it takes for a tap or reverse note to become fully charged. */
-  const DEFAULT_CHARGE_FRAMES = 120;
+  const DEFAULT_CHARGE_FRAMES = 60;
   /** The default number of frames a hold note should be held for. */
-  const DEFAULT_HOLD_FRAMES = 90;
+  const DEFAULT_HOLD_FRAMES = 60;
 
   /** The maximum number of history entries to retain for undo/redo. */
   const MAX_ACTION_HISTORY = 200;
@@ -193,6 +193,39 @@ export const useTimelineHistoryStore = defineStore("timelineHistory", () => {
   }
 
   /**
+   * Place a note at an exact grid cell and frame.
+   *
+   * Used by the playtester grid.
+   *
+   * @param gridIndex - The grid cell to place the note in.
+   * @param frame - The exact peak frame to place the note at.
+   * @param type - The note type to place.
+   * @param direction - The direction, for types that support it.
+   */
+  function placeNoteAtGrid(
+    gridIndex: number,
+    frame: number,
+    type: NoteType,
+    direction?: Direction,
+  ) {
+    const snapshot = cloneNotes(beatmapState.notes);
+
+    const note: Note = clampNoteToTimeline({
+      id: crypto.randomUUID(),
+      type,
+      direction,
+      speedModifier: 0,
+      gridIndex,
+      peakFrame: frame,
+      chargeFrames: DEFAULT_CHARGE_FRAMES,
+      holdFrames: type === NoteType.HOLD ? DEFAULT_HOLD_FRAMES : undefined,
+    });
+
+    beatmapState.notes.push(note);
+    pushUndoSnapshot(snapshot);
+  }
+
+  /**
    * Clamp a note so that its full duration stays inside the timeline.
    *
    * This includes charge frames before the peak and hold frames after it.
@@ -223,6 +256,37 @@ export const useTimelineHistoryStore = defineStore("timelineHistory", () => {
     };
   }
 
+  /**
+   * Shift every selected note's peak frame by a value.
+   *
+   * @param delta - The frame delta to move by.
+   */
+  function moveSelected(delta: number) {
+    const timelineUi = useTimelineUiStore();
+    const beatmapState = useBeatmapStateStore();
+
+    if (timelineUi.selectedNoteIds.size === 0) return;
+
+    const snapshot = cloneNotes(beatmapState.notes);
+    let moved = false; // we need this to check if we actually moved anything after the loop
+    // if not, we shouldn't add the action as a snapshot
+
+    for (const note of beatmapState.notes) {
+      if (!timelineUi.selectedNoteIds.has(note.id)) continue;
+
+      const newFrame = Math.max(0, note.peakFrame + delta);
+      if (newFrame === note.peakFrame) continue;
+
+      Object.assign(
+        note,
+        clampNoteToTimeline({ ...note, peakFrame: newFrame }),
+      );
+      moved = true;
+    }
+
+    if (moved) pushUndoSnapshot(snapshot);
+  }
+
   return {
     undoStack,
     redoStack,
@@ -238,6 +302,8 @@ export const useTimelineHistoryStore = defineStore("timelineHistory", () => {
     deleteNote,
     deleteSelected,
     placeNoteAt,
+    placeNoteAtGrid,
     clampNoteToTimeline,
+    moveSelected,
   };
 });

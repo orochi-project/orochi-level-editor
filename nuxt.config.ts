@@ -30,4 +30,19 @@ export default defineNuxtConfig({
       },
     },
   },
+
+  icon: {
+    clientBundle: {
+      icons: [
+        "lucide:circle",
+        "lucide:rectangle-horizontal",
+        "lucide:diamond",
+        "lucide:arrow-left",
+        "lucide:arrow-right",
+        "lucide:arrow-up",
+        "lucide:arrow-down",
+        "lucide:grid-3x3",
+      ],
+    },
+  },
 });

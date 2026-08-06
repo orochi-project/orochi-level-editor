@@ -83,22 +83,21 @@ const gridBackground = computed(() => {
     >
       <div
         v-if="note.type === NoteType.HOLD"
-        class="z-20 cursor-grab absolute top-1/2 -translate-y-1/2 h-9 active:cursor-grabbing"
+        class="z-20 pointer-events-none absolute top-1/2 -translate-y-1/2 h-9"
         :style="{
           left:
             frameToPx(
-              note.peakFrame - note.chargeFrames,
+              note.peakFrame - note.chargeFrames!,
               timelineUi.pixelsPerFrame,
             ) + 'px',
           width:
-            frameToPx(
-              note.chargeFrames + note.holdFrames!,
-              timelineUi.pixelsPerFrame,
-            ) + 'px',
+            frameToPx(note.chargeFrames!, timelineUi.pixelsPerFrame) +
+            getNoteHeadSize(note) +
+            'px',
         }"
       >
         <div
-          class="absolute inset-y-0 left-0 rounded-l-sm bg-yellow-400/25"
+          class="pointer-events-none absolute inset-y-0 left-0 rounded-l-sm bg-yellow-400/25"
           :style="{
             width:
               frameToPx(note.chargeFrames, timelineUi.pixelsPerFrame) + 'px',
@@ -106,7 +105,7 @@ const gridBackground = computed(() => {
         />
 
         <div
-          class="overflow-hidden absolute inset-y-0 rounded-r-md flex justify-center items-center ring-2 bg-yellow-400"
+          class="pointer-events-auto overflow-hidden absolute inset-y-0 rounded-r-md flex justify-center items-center ring-2 bg-yellow-400 cursor-grab active:cursor-grabbing hover:z-30"
           :class="
             timelineUi.selectedNoteIds.has(note.id)
               ? 'ring-primary'
@@ -137,26 +136,21 @@ const gridBackground = computed(() => {
 
       <div
         v-else
-        class="cursor-grab z-20 absolute top-1/2 -translate-y-1/2 h-9 active:cursor-grabbing"
+        class="z-20 pointer-events-none absolute top-1/2 -translate-y-1/2 h-9"
         :style="{
           left:
             frameToPx(
               note.peakFrame - note.chargeFrames!,
               timelineUi.pixelsPerFrame,
-            ) +
+            ) + 'px',
+          width:
+            frameToPx(note.chargeFrames!, timelineUi.pixelsPerFrame) +
             getNoteHeadSize(note) +
             'px',
-          width:
-            Math.max(
-              frameToPx(note.chargeFrames!, timelineUi.pixelsPerFrame),
-              getNoteHeadSize(note),
-            ) + 'px',
         }"
-        @pointerdown="emit('note-down', $event, note)"
-        @dblclick.stop="timelineHistory.deleteNote(note.id)"
       >
         <div
-          class="absolute inset-y-2 left-0 right-4 rounded-l-sm"
+          class="pointer-events-none absolute inset-y-2 left-0 right-4 rounded-l-sm"
           :class="[
             note.type === NoteType.TAP
               ? 'bg-green-300/25'
@@ -166,12 +160,14 @@ const gridBackground = computed(() => {
 
         <div
           v-if="note.type === NoteType.TAP"
-          class="absolute flex justify-center items-center right-0 top-1/2 -translate-y-1/2 size-8 rounded-full ring-2 bg-green-300"
+          class="pointer-events-auto cursor-grab active:cursor-grabbing hover:z-30 absolute flex justify-center items-center right-0 top-1/2 -translate-y-1/2 size-8 rounded-full ring-2 bg-green-300"
           :class="
             timelineUi.selectedNoteIds.has(note.id)
               ? 'ring-primary'
               : 'ring-transparent'
           "
+          @pointerdown="emit('note-down', $event, note)"
+          @dblclick.stop="timelineHistory.deleteNote(note.id)"
         >
           <UIcon
             v-if="note.direction !== undefined"
@@ -182,11 +178,13 @@ const gridBackground = computed(() => {
 
         <div
           v-else
-          class="absolute flex justify-center items-center right-0 top-1/2 -translate-y-1/2"
+          class="pointer-events-auto cursor-grab active:cursor-grabbing hover:z-30 absolute flex justify-center items-center right-0 top-1/2 -translate-y-1/2"
           :style="{
             width: REVERSE_NOTE_HEAD_SIZE + 'px',
             height: REVERSE_NOTE_HEAD_SIZE + 'px',
           }"
+          @pointerdown="emit('note-down', $event, note)"
+          @dblclick.stop="timelineHistory.deleteNote(note.id)"
         >
           <div
             class="absolute rotate-45 rounded-md ring-2 bg-fuchsia-400"

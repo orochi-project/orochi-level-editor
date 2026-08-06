@@ -125,7 +125,7 @@ function onInspectorResizeDown(e: PointerEvent) {
           >
           <UInputNumber
             v-model="timelineUi.selectedNote.speedModifier"
-            :min="1"
+            :min="0"
             class="w-full"
           />
         </div>
