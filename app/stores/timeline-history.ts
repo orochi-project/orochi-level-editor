@@ -6,7 +6,7 @@ export const useTimelineHistoryStore = defineStore("timelineHistory", () => {
   const { currentFrame } = storeToRefs(useTimelineAudioStore());
 
   /** The default number of frames it takes for a tap or reverse note to become fully charged. */
-  const DEFAULT_CHARGE_FRAMES = 60;
+  const DEFAULT_CHARGE_FRAMES = 90;
   /** The default number of frames a hold note should be held for. */
   const DEFAULT_HOLD_FRAMES = 60;
 
