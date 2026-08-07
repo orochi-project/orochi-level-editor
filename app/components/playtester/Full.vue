@@ -6,6 +6,7 @@ import mapBackground from "~/assets/res/backgrounds/map-background.png";
 const beatmapState = useBeatmapStateStore();
 const timelineUi = useTimelineUiStore();
 const timelineHistory = useTimelineHistoryStore();
+const playtesterUi = usePlaytesterUiStore();
 const { currentFrame } = storeToRefs(useTimelineAudioStore());
 
 /** The number of grid rows to display. */
@@ -31,9 +32,6 @@ const scanlineBox = computed(() => ({
   top: SCANLINE_CLIP_TOP * imgSize.value.height,
   height: (SCANLINE_CLIP_BOTTOM - SCANLINE_CLIP_TOP) * imgSize.value.height,
 }));
-
-/** Whether or not the grid overlay is visible. */
-const showGrid = ref(true);
 
 /** The map background image. */
 const imgElement = ref<HTMLImageElement>();
@@ -270,8 +268,14 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="overflow-x-auto flex justify-center gap-4 w-full h-full">
-    <PlaytesterToolbar v-model:show-grid="showGrid" />
+  <div
+    class="overflow-x-auto overflow-y-hidden flex justify-center gap-4 w-full h-full"
+  >
+    <PlaytesterToolbar
+      orientation="vertical"
+      v-model:show-grid="playtesterUi.showGrid"
+      class="playtester-toolbar"
+    />
 
     <div class="relative h-full shrink-0">
       <!-- background -->
@@ -292,7 +296,7 @@ onBeforeUnmount(() => {
           :key="cell.index"
           class="group cursor-pointer absolute"
           :class="
-            showGrid
+            playtesterUi.showGrid
               ? 'border border-red-300/50 hover:border-red-300 hover:bg-red-400/20'
               : ''
           "
@@ -340,3 +344,11 @@ onBeforeUnmount(() => {
     </div>
   </div>
 </template>
+
+<style scoped>
+@media (max-height: 700px) {
+  .playtester-toolbar {
+    display: none;
+  }
+}
+</style>

@@ -1,7 +1,10 @@
 <script setup lang="ts">
 const timelineUi = useTimelineUiStore();
 
-const props = defineProps<{ showGrid: boolean }>();
+const props = defineProps<{
+  orientation: "horizontal" | "vertical";
+  showGrid: boolean;
+}>();
 const emit = defineEmits<{ (e: "update:showGrid", value: boolean): void }>();
 
 /** The directions allowed for the currently active note type, with their icon and label. */
@@ -17,7 +20,12 @@ const availableDirections = computed(() => {
 
 <template>
   <div
-    class="flex flex-col items-center gap-4 p-3 w-16 shrink-0 border-x border-default"
+    class="flex items-center gap-4 p-3 shrink-0"
+    :class="
+      props.orientation === 'horizontal'
+        ? 'overflow-x-auto flex-row'
+        : 'overflow-y-auto flex-col w-16 border-x border-default'
+    "
   >
     <UTooltip text="Show Grid">
       <UButton
@@ -32,7 +40,10 @@ const availableDirections = computed(() => {
 
     <USeparator orientation="horizontal" />
 
-    <div class="flex flex-col gap-1">
+    <div
+      class="flex gap-1"
+      :class="props.orientation === 'horizontal' ? 'flex-row' : 'flex-col'"
+    >
       <UTooltip
         v-for="noteType in NOTE_TYPES"
         :key="noteType.key"
@@ -53,7 +64,11 @@ const availableDirections = computed(() => {
 
     <USeparator orientation="horizontal" />
 
-    <div v-if="availableDirections.length" class="flex flex-col gap-1">
+    <div
+      v-if="availableDirections.length"
+      class="flex gap-1"
+      :class="props.orientation === 'horizontal' ? 'flex-row' : 'flex-col'"
+    >
       <UTooltip
         v-for="direction in availableDirections"
         :key="direction.key"
