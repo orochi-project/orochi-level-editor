@@ -3,7 +3,6 @@ import type { DropdownMenuItem } from "@nuxt/ui";
 
 const beatmapFile = useBeatmapFileStore();
 const beatmapState = useBeatmapStateStore();
-const playtesterUi = usePlaytesterUiStore();
 
 // for keyboard shortcuts
 const timelineUi = useTimelineUiStore();
@@ -146,12 +145,6 @@ defineShortcuts({
       </UDropdownMenu>
     </template>
 
-    <PlaytesterToolbar
-      orientation="horizontal"
-      v-model:show-grid="playtesterUi.showGrid"
-      class="playtester-toolbar"
-    />
-
     <template #right>
       <UTooltip text="Toggle Theme">
         <UColorModeButton />
@@ -170,11 +163,3 @@ defineShortcuts({
     </template>
   </UHeader>
 </template>
-
-<style scoped>
-@media (min-height: 700px) {
-  .playtester-toolbar {
-    display: none;
-  }
-}
-</style>

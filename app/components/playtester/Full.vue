@@ -268,18 +268,10 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div
-    class="overflow-x-auto overflow-y-hidden flex justify-center gap-4 w-full h-full"
-  >
-    <PlaytesterToolbar
-      orientation="vertical"
-      v-model:show-grid="playtesterUi.showGrid"
-      class="playtester-toolbar"
-    />
-
-    <div class="relative h-full shrink-0">
+  <div class="overflow-x-auto overflow-y-hidden flex gap-4 w-full h-full">
+    <div class="relative shrink-0 mx-auto h-full">
       <!-- background -->
-      <img ref="imgElement" class="h-full block" :src="mapBackground" />
+      <img ref="imgElement" class="h-full" :src="mapBackground" />
 
       <!-- grid -->
       <div
@@ -344,11 +336,3 @@ onBeforeUnmount(() => {
     </div>
   </div>
 </template>
-
-<style scoped>
-@media (max-height: 700px) {
-  .playtester-toolbar {
-    display: none;
-  }
-}
-</style>
