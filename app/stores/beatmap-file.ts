@@ -58,6 +58,19 @@ export const useBeatmapFileStore = defineStore("beatmapFile", () => {
   }
 
   /**
+   * Get the base name of a filename.
+   *
+   * @param filename - The full filename.
+   *
+   * @returns The file base name.
+   */
+  function getBaseName(filename?: string): string {
+    if (!filename) return "";
+    const dot = filename.lastIndexOf(".");
+    return dot <= 0 ? filename : filename.slice(0, dot);
+  }
+
+  /**
    * Get the file extension of a given filename.
    *
    * Returns "audio" if no file extension is found.
@@ -66,7 +79,8 @@ export const useBeatmapFileStore = defineStore("beatmapFile", () => {
    *
    * @returns The file extension.
    */
-  function getFileExtension(filename: string): string {
+  function getFileExtension(filename?: string): string {
+    if (!filename) return "";
     const dot = filename.lastIndexOf(".");
     return dot <= 0 ? "" : filename.slice(dot + 1);
   }
@@ -76,7 +90,7 @@ export const useBeatmapFileStore = defineStore("beatmapFile", () => {
     try {
       const blob = await fileOpen({
         extensions: [".orbm"],
-        description: "Orochi Beatmap",
+        description: "Orochi Beatmap Bundle",
       });
 
       beatmapFileName.value = blob.name;
@@ -145,7 +159,10 @@ export const useBeatmapFileStore = defineStore("beatmapFile", () => {
     try {
       const handle = await fileSave(
         await serializeBeatmap(),
-        { fileName: "chart.orbm", extensions: [".orbm"] },
+        {
+          fileName: `${getBaseName(beatmapFileName.value) ?? CHART_ENTRY_FILENAME}.orbm`,
+          extensions: [".orbm"],
+        },
         beatmapFileHandle.value,
         false,
       );
@@ -158,6 +175,59 @@ export const useBeatmapFileStore = defineStore("beatmapFile", () => {
     } catch (err) {
       console.error("Failed to save beatmap:", err);
     }
+  }
+
+  /** Export the beatmap as a JSON file. */
+  async function exportBeatmapJson() {
+    try {
+      const converted = [...beatmapState.notes]
+        .sort(
+          (a, b) =>
+            a.peakFrame - a.chargeFrames - (b.peakFrame - b.chargeFrames),
+        )
+        .map((note) => {
+          let noteType: number;
+
+          if (note.type == NoteType.TAP)
+            switch (note.direction) {
+              case Direction.LEFT:
+                noteType = 0;
+                break;
+              case Direction.RIGHT:
+                noteType = 1;
+                break;
+              case Direction.UP:
+                noteType = 2;
+                break;
+              case Direction.DOWN:
+                noteType = 3;
+                break;
+            }
+          else if (note.type == NoteType.HOLD) noteType = 4;
+          else noteType = 5;
+
+          return {
+            type: noteType!,
+            grid_idx: note.gridIndex,
+            speed_modifier: note.speedModifier,
+            appear_frame: note.peakFrame - note.chargeFrames,
+            charge_frames: note.chargeFrames,
+            hold_frames: note.holdFrames || 0,
+          };
+        });
+
+      const json = JSON.stringify(converted, null, 2);
+
+      const blob = new Blob([json], {
+        type: "application/json",
+      });
+
+      await fileSave(blob, {
+        fileName: getBaseName(beatmapFileName.value) ?? CHART_ENTRY_FILENAME,
+        extensions: [".json"],
+        description: "Orochi Beatmap JSON",
+      });
+    } catch {}
   }
 
   /** Restore the file system file handle. */
@@ -182,6 +252,7 @@ export const useBeatmapFileStore = defineStore("beatmapFile", () => {
     supported,
     openBeatmap,
     saveBeatmap,
+    exportBeatmapJson,
     restoreHandle,
   };
 });

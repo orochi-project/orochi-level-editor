@@ -26,7 +26,12 @@ const menuBarItems = computed<{ label: string; options: DropdownMenuItem[] }[]>(
           kbds: ["Ctrl", "S"],
           onSelect: beatmapFile.saveBeatmap,
         },
-        { label: "Export (GBDK .c)", kbds: ["Ctrl", "Enter"] }, // TODO: implement this
+        { label: "Export (C)", kbds: ["Ctrl", "Enter"] }, // TODO: implement this
+        {
+          label: "Export (JSON)",
+          kbds: ["Ctrl", "Shift", "Enter"],
+          onSelect: beatmapFile.exportBeatmapJson,
+        },
 
         { type: "separator" },
 
@@ -114,8 +119,9 @@ function onAudioFileSelected(e: Event) {
 }
 
 defineShortcuts({
-  meta_o: () => beatmapFile.openBeatmap(),
-  meta_s: () => beatmapFile.saveBeatmap(),
+  meta_o: beatmapFile.openBeatmap,
+  meta_s: beatmapFile.saveBeatmap,
+  shift_meta_enter: beatmapFile.exportBeatmapJson,
   meta_i: triggerAudioImport,
 });
 </script>
